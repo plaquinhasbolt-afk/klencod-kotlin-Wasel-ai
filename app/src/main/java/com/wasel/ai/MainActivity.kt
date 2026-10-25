@@ -12,6 +12,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.Gravity
 import android.view.View
+import android.view.inputmethod.InputType
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
@@ -70,9 +71,7 @@ class MainActivity : Activity() {
         return GradientDrawable().apply {
             setColor(color)
             cornerRadius = dp(radius).toFloat()
-            if (stroke != null) {
-                setStroke(dp(1), stroke)
-            }
+            if (stroke != null) setStroke(dp(1), stroke)
         }
     }
 
@@ -88,10 +87,7 @@ class MainActivity : Activity() {
             setTextColor(color)
             gravity = Gravity.RIGHT or Gravity.CENTER_VERTICAL
             layoutDirection = View.LAYOUT_DIRECTION_RTL
-
-            if (bold) {
-                typeface = Typeface.DEFAULT_BOLD
-            }
+            if (bold) typeface = Typeface.DEFAULT_BOLD
         }
     }
 
@@ -105,19 +101,14 @@ class MainActivity : Activity() {
             textSize = 14f
             isAllCaps = false
             setTextColor(Color.WHITE)
-
             background = shape(
                 if (primaryButton) primary else surface2,
                 12,
                 if (primaryButton) null else border
             )
-
             setPadding(dp(10), 0, dp(10), 0)
             minHeight = dp(44)
-
-            setOnClickListener {
-                click()
-            }
+            setOnClickListener { click() }
         }
     }
 
@@ -139,24 +130,17 @@ class MainActivity : Activity() {
             orientation = LinearLayout.VERTICAL
         }
 
-        titles.addView(
-            label("Wasel AI", 25f, ink, true)
-        )
-
-        titles.addView(
-            label("دفترك الدراسي الذكي", 13f, muted)
-        )
+        titles.addView(label("Wasel AI", 25f, ink, true))
+        titles.addView(label("دفترك الدراسي الذكي", 13f, muted))
 
         header.addView(
             titles,
             LinearLayout.LayoutParams(0, -2, 1f)
         )
 
-        header.addView(
-            action("＋ ملاحظة", true) {
-                editNote(null)
-            }
-        )
+        header.addView(action("＋ ملاحظة", true) {
+            editNote(null)
+        })
 
         root.addView(header)
 
@@ -174,11 +158,10 @@ class MainActivity : Activity() {
             setHintTextColor(muted)
             setTextColor(ink)
             textSize = 15f
-            singleLine = true
-
+            inputType = InputType.TYPE_CLASS_TEXT
+            setSingleLine(true)
             gravity = Gravity.RIGHT or Gravity.CENTER_VERTICAL
             layoutDirection = View.LAYOUT_DIRECTION_RTL
-
             setPadding(dp(12), 0, dp(12), 0)
             background = shape(surface, 12, border)
         }
@@ -207,27 +190,19 @@ class MainActivity : Activity() {
         }
 
         scroll.addView(list)
+        root.addView(scroll, LinearLayout.LayoutParams(-1, 0, 1f))
 
         root.addView(
-            scroll,
-            LinearLayout.LayoutParams(-1, 0, 1f)
-        )
-
-        root.addView(
-            label(
-                "المرحلة الأولى • حفظ محلي على هذا الجهاز",
-                11f,
-                muted
-            ).apply {
-                gravity = Gravity.CENTER
-                setPadding(0, dp(8), 0, 0)
-            }
+            label("المرحلة الأولى • حفظ محلي على هذا الجهاز", 11f, muted)
+                .apply {
+                    gravity = Gravity.CENTER
+                    setPadding(0, dp(8), 0, 0)
+                }
         )
 
         setContentView(root)
 
         search.addTextChangedListener(object : TextWatcher {
-
             override fun beforeTextChanged(
                 s: CharSequence?,
                 start: Int,
@@ -256,9 +231,7 @@ class MainActivity : Activity() {
         val filtered = notes.filter {
             it.title.contains(query, ignoreCase = true) ||
                 it.body.contains(query, ignoreCase = true)
-        }.sortedByDescending {
-            it.updated
-        }
+        }.sortedByDescending { it.updated }
 
         if (filtered.isEmpty()) {
             val message = if (query.isBlank()) {
@@ -270,18 +243,14 @@ class MainActivity : Activity() {
             list.addView(
                 label(message, 15f, muted).apply {
                     gravity = Gravity.CENTER
-                    setPadding(
-                        dp(16), dp(28), dp(16), dp(28)
-                    )
+                    setPadding(dp(16), dp(28), dp(16), dp(28))
                 },
                 LinearLayout.LayoutParams(-1, -2)
             )
-
             return
         }
 
         filtered.forEach { note ->
-
             val card = LinearLayout(this).apply {
                 orientation = LinearLayout.VERTICAL
                 setPadding(dp(14), dp(12), dp(14), dp(12))
@@ -303,9 +272,7 @@ class MainActivity : Activity() {
                 .let {
                     if (it.length > 140) it.take(140) + "…" else it
                 }
-                .ifBlank {
-                    "اضغط تعديل لإضافة محتوى"
-                }
+                .ifBlank { "اضغط تعديل لإضافة محتوى" }
 
             card.addView(
                 label(preview, 13f, muted),
@@ -327,11 +294,9 @@ class MainActivity : Activity() {
                 layoutDirection = View.LAYOUT_DIRECTION_LTR
             }
 
-            row.addView(
-                action("تعديل") {
-                    editNote(note.id)
-                }
-            )
+            row.addView(action("تعديل") {
+                editNote(note.id)
+            })
 
             row.addView(
                 action("حذف") {
@@ -375,10 +340,11 @@ class MainActivity : Activity() {
             setTextColor(ink)
             setHintTextColor(muted)
             textSize = 18f
-            singleLine = true
+            inputType = InputType.TYPE_CLASS_TEXT or
+                InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
+            setSingleLine(true)
             gravity = Gravity.RIGHT
             layoutDirection = View.LAYOUT_DIRECTION_RTL
-
             setPadding(dp(10), dp(8), dp(10), dp(8))
             background = shape(surface2, 10, border)
         }
@@ -389,21 +355,18 @@ class MainActivity : Activity() {
             setTextColor(ink)
             setHintTextColor(muted)
             textSize = 16f
-
+            inputType = InputType.TYPE_CLASS_TEXT or
+                InputType.TYPE_TEXT_FLAG_MULTI_LINE or
+                InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
             gravity = Gravity.TOP or Gravity.RIGHT
             layoutDirection = View.LAYOUT_DIRECTION_RTL
-
             minLines = 8
             maxLines = 14
-
             setPadding(dp(10), dp(10), dp(10), dp(10))
             background = shape(surface2, 10, border)
         }
 
-        panel.addView(
-            title,
-            LinearLayout.LayoutParams(-1, dp(54))
-        )
+        panel.addView(title, LinearLayout.LayoutParams(-1, dp(54)))
 
         panel.addView(
             body,
@@ -413,10 +376,7 @@ class MainActivity : Activity() {
         )
 
         val dialog = AlertDialog.Builder(this)
-            .setTitle(
-                if (old == null) "ملاحظة جديدة"
-                else "تعديل الملاحظة"
-            )
+            .setTitle(if (old == null) "ملاحظة جديدة" else "تعديل الملاحظة")
             .setView(panel)
             .setNegativeButton("إلغاء", null)
             .setPositiveButton("حفظ", null)
@@ -425,7 +385,6 @@ class MainActivity : Activity() {
         dialog.setOnShowListener {
             dialog.getButton(AlertDialog.BUTTON_POSITIVE)
                 .setOnClickListener {
-
                     val t = title.text.toString().trim()
                     val b = body.text.toString().trim()
 
@@ -469,9 +428,7 @@ class MainActivity : Activity() {
             .setMessage("هل تريد حذف هذه الملاحظة من الجهاز؟")
             .setNegativeButton("إلغاء", null)
             .setPositiveButton("حذف") { _, _ ->
-
                 notes.removeAll { it.id == id }
-
                 saveNotes()
                 render(search.text.toString())
 
@@ -508,16 +465,10 @@ class MainActivity : Activity() {
 
                 notes.add(
                     Note(
-                        obj.optLong(
-                            "id",
-                            System.currentTimeMillis() + i
-                        ),
+                        obj.optLong("id", System.currentTimeMillis() + i),
                         obj.optString("title", ""),
                         obj.optString("body", ""),
-                        obj.optLong(
-                            "updated",
-                            System.currentTimeMillis()
-                        )
+                        obj.optLong("updated", System.currentTimeMillis())
                     )
                 )
             }
